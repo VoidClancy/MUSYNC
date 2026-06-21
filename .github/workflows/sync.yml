@@ -1,0 +1,42 @@
+name: Spotify-Deezer Sync
+
+on:
+  schedule:
+    - cron: '0 */4 * * *' 
+  workflow_dispatch:     
+
+permissions:
+  contents: write         
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Install Dependencies
+        run: go mod download
+
+      - name: Build Sync App
+        run: go build -o spotify-deezer-sync .
+
+      - name: Run Sync App
+        env:
+          DEEZER_ARL: ${{ secrets.DEEZER_ARL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: ./spotify-deezer-sync
+
+      - name: Commit and Push Updated Playlists Config and Cache
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add playlists.json isrc_cache.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update playlists.json and isrc_cache.json [skip ci]" && git push)
