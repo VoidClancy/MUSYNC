@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -21,7 +22,18 @@ type Audit struct {
 	TracksMissed   int
 	AlreadyPresent int
 	TracksAdded    int
+	TracksDeleted  int
 	Err            error
+}
+
+func escapeMarkdown(s string) string {
+	replacer := strings.NewReplacer(
+		"*", "\\*",
+		"_", "\\_",
+		"[", "\\[",
+		"`", "\\`",
+	)
+	return replacer.Replace(s)
 }
 
 func SendSyncSummary(botToken, chatID string, duration time.Duration, audits []Audit) error {
@@ -29,57 +41,92 @@ func SendSyncSummary(botToken, chatID string, duration time.Duration, audits []A
 		return nil
 	}
 
-	var totalISRCs, totalResolved, totalAdded, totalErrors int
+	var totalISRCs, totalResolved, totalAdded, totalDeleted, totalMissed, totalErrors int
 	var detailsBuf bytes.Buffer
+	var unchangedNames []string
 
 	for _, a := range audits {
 		totalISRCs += a.ISRCsFound
 		totalResolved += a.TracksResolved
 		totalAdded += a.TracksAdded
+		totalDeleted += a.TracksDeleted
+		totalMissed += a.TracksMissed
 
-		statusIcon := "[ OK ]"
-		statusText := "OK"
 		if a.Err != nil {
-			statusIcon = "[FAIL]"
-			statusText = "FAILED: " + a.Err.Error()
 			totalErrors++
 		}
 
-		fmt.Fprintf(&detailsBuf, "%s *%s*\n", statusIcon, a.Name)
-		fmt.Fprintf(&detailsBuf, "• Tracks: %d | Resolved: %d\n", a.ISRCsFound, a.TracksResolved)
-		if a.TracksAdded > 0 {
-			fmt.Fprintf(&detailsBuf, "• Added: %d new tracks\n", a.TracksAdded)
+		isUnchanged := a.Err == nil && a.TracksAdded == 0 && a.TracksDeleted == 0 && a.TracksMissed == 0
+		if isUnchanged {
+			unchangedNames = append(unchangedNames, escapeMarkdown(a.Name))
+			continue
 		}
+
+		statusText := "OK"
 		if a.Err != nil {
-			fmt.Fprintf(&detailsBuf, "• Status: %s\n", statusText)
+			statusText = "FAILED"
+		}
+
+		fmt.Fprintf(&detailsBuf, "*» %s*\n", escapeMarkdown(a.Name))
+		detailsBuf.WriteString("```\n")
+		fmt.Fprintf(&detailsBuf, "Status:  %s\n", statusText)
+		fmt.Fprintf(&detailsBuf, "ISRCs:   %d parsed | %d resolved", a.ISRCsFound, a.TracksResolved)
+		if a.TracksMissed > 0 {
+			fmt.Fprintf(&detailsBuf, " (%d missed)", a.TracksMissed)
 		}
 		detailsBuf.WriteString("\n")
+		fmt.Fprintf(&detailsBuf, "Changes: +%d added | -%d deleted\n", a.TracksAdded, a.TracksDeleted)
+		if a.Err != nil {
+			errStr := strings.ReplaceAll(a.Err.Error(), "`", "'")
+			fmt.Fprintf(&detailsBuf, "Error:   %s\n", errStr)
+		}
+		detailsBuf.WriteString("```\n\n")
 	}
 
-	summaryHeader := "=== Deezer Sync Summary ==="
-	if totalErrors > 0 {
-		summaryHeader = "=== Deezer Sync Summary (Errors Encountered) ==="
+	var status string
+	if totalErrors == 0 {
+		status = "SUCCESS"
+	} else if totalErrors == len(audits) {
+		status = "FAILED"
+	} else {
+		status = "WARNING"
+	}
+
+	var unchangedSection string
+	if len(unchangedNames) > 0 {
+		if len(unchangedNames) == len(audits) {
+			unchangedSection = "All playlists are up to date.\n"
+		} else {
+			unchangedSection = fmt.Sprintf("*Unchanged:* %s\n\n", strings.Join(unchangedNames, ", "))
+		}
 	}
 
 	summaryText := fmt.Sprintf(
-		"*%s*\n\n"+
-			"*Duration:* %s\n"+
-			"*Playlists:* %d total (%d failed)\n"+
-			"*Tracks:* %d found | %d resolved | %d added\n\n"+
+		"*DEEZER SYNC SUMMARY*\n"+
+			"```\n"+
+			"Status:    %s\n"+
+			"Duration:  %s\n"+
+			"Playlists: %d total (%d failed)\n"+
+			"Tracks:    %d parsed | %d resolved\n"+
+			"Changes:   +%d added | -%d deleted\n"+
+			"```\n\n"+
+			"%s"+
 			"%s",
-		summaryHeader,
+		status,
 		duration.Round(time.Second),
 		len(audits),
 		totalErrors,
 		totalISRCs,
 		totalResolved,
 		totalAdded,
-		detailsBuf.String(),
+		totalDeleted,
+		unchangedSection,
+		strings.TrimSpace(detailsBuf.String()),
 	)
 
 	payload := sendMessagePayload{
 		ChatID:    chatID,
-		Text:      summaryText,
+		Text:      strings.TrimSpace(summaryText),
 		ParseMode: "Markdown",
 	}
 

@@ -1,10 +1,10 @@
 package main
 
 import (
+	"musync/logger"
 	"net/http"
 	"net/http/cookiejar"
 	"os"
-	"musync/logger"
 
 	"github.com/joho/godotenv"
 )

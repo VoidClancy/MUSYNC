@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"os"
 	"musync/deezer"
 	isrchunt "musync/isrcHunt"
 	"musync/logger"
 	"musync/telegram"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -15,7 +15,7 @@ func runSync(client *http.Client, deezerArl string, playlists []Playlist) {
 	runStart := time.Now()
 	logger.Info("[START]")
 
-	deezerToken, deezerUserID, err := deezer.GetDeezerToken(client, deezerArl)
+	deezerToken, deezerUserID, err := deezer.GetDeezerCreds(client, deezerArl)
 	if err != nil {
 		logger.Error("deezer auth failed", "err", err)
 		return
@@ -98,30 +98,49 @@ func syncPlaylist(session *deezer.Session, playlist *Playlist) (telegram.Audit, 
 			newTrackIDs = append(newTrackIDs, id)
 		}
 	}
+	resolvedSet := make(map[int64]bool, len(resolved))
+	for _, id := range resolved {
+		resolvedSet[id] = true
+	}
 
-	if len(newTrackIDs) == 0 {
-		logger.Info("no new tracks to add, playlist already up to date",
-			"playlist", playlist.Name, "already_present", audit.AlreadyPresent)
+	var removeTrackIDs []int64
+	for id := range existing {
+		if !resolvedSet[id] {
+			removeTrackIDs = append(removeTrackIDs, id)
+		}
+	}
+
+	if len(newTrackIDs) == 0 && len(removeTrackIDs) == 0 {
+		logger.Info("playlist already up to date")
 		return audit, nil
 	}
-
-	if err := deezer.AddSongsToPlaylist(session, deezerPlaylistID, newTrackIDs); err != nil {
-		return audit, fmt.Errorf("add songs: %w", err)
+	if len(removeTrackIDs) > 0 {
+		if err := deezer.DeleteSongsFromPlaylist(session, deezerPlaylistID, removeTrackIDs); err != nil {
+			return audit, fmt.Errorf("remove songs: %w", err)
+		}
+		audit.TracksDeleted = len(removeTrackIDs)
 	}
-	audit.TracksAdded = len(newTrackIDs)
 
-	logger.Info("sync completed", "playlist", playlist.Name, "added", len(newTrackIDs), "already_present", audit.AlreadyPresent)
+	if len(newTrackIDs) > 0 {
+		if err := deezer.AddSongsToPlaylist(session, deezerPlaylistID, newTrackIDs); err != nil {
+			return audit, fmt.Errorf("add songs: %w", err)
+		}
+		audit.TracksAdded = len(newTrackIDs)
+	}
+
+	logger.Info("sync completed", "playlist", playlist.Name, "added", len(newTrackIDs), "already_present", audit.AlreadyPresent, "deleted", len(removeTrackIDs))
 	return audit, nil
 }
 
 func printAndNotifySummary(audits []telegram.Audit, runStart time.Time) {
-	var totalISRCs, totalResolved, totalMissed, totalAlreadyPresent, totalAdded, totalErrors int
+	var totalISRCs, totalResolved, totalMissed, totalAlreadyPresent, totalAdded, totalErrors, totalDeleted int
 	for _, a := range audits {
 		totalISRCs += a.ISRCsFound
 		totalResolved += a.TracksResolved
 		totalMissed += a.TracksMissed
 		totalAlreadyPresent += a.AlreadyPresent
 		totalAdded += a.TracksAdded
+		totalDeleted += a.TracksDeleted
 		if a.Err != nil {
 			totalErrors++
 		}
@@ -136,6 +155,7 @@ func printAndNotifySummary(audits []telegram.Audit, runStart time.Time) {
 		"tracks_missed", totalMissed,
 		"already_present", totalAlreadyPresent,
 		"tracks_added", totalAdded,
+		"tracks_deleted", totalDeleted,
 	)
 
 	for _, a := range audits {
@@ -150,6 +170,7 @@ func printAndNotifySummary(audits []telegram.Audit, runStart time.Time) {
 			"missed", a.TracksMissed,
 			"already_present", a.AlreadyPresent,
 			"added", a.TracksAdded,
+			"deleted", a.TracksDeleted,
 			"status", status,
 		)
 	}
