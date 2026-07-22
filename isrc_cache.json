@@ -15,6 +15,22 @@
     "id": 802762252,
     "title": "I Let It in and It Took Everything..."
   },
+  "DELV41501036": {
+    "id": 3807039822,
+    "title": "Still Loving You (Remastered 2015)"
+  },
+  "DEX261601433": {
+    "id": 894163562,
+    "title": "Fr3sh"
+  },
+  "DEX261601434": {
+    "id": 894163572,
+    "title": "Held"
+  },
+  "DEX261601438": {
+    "id": 894163612,
+    "title": "Second Mistake"
+  },
   "DEXO42399958": {
     "id": 2590938632,
     "title": "All you are going to want to do is get back there"
@@ -42,6 +58,10 @@
   "GB4YG1900213": {
     "id": 698072092,
     "title": "Dawn Chorus"
+  },
+  "GB5SH2000001": {
+    "id": 957399442,
+    "title": "Solitude (Felsmann + Tiley Reinterpretation)"
   },
   "GBAAA9900502": {
     "id": 1893776287,
@@ -311,9 +331,21 @@
     "id": 2607903442,
     "title": "Teleharmonic"
   },
+  "GBBKS2400004": {
+    "id": 2737156941,
+    "title": "Letting Down Gently"
+  },
+  "GBBKS2400005": {
+    "id": 2737156951,
+    "title": "Secret Clarinet"
+  },
   "GBBKS2400008": {
     "id": 2737156981,
     "title": "Four Ways In Time"
+  },
+  "GBBKS2400079": {
+    "id": 2723278042,
+    "title": "Starburster"
   },
   "GBBKS2400186": {
     "id": 2991583321,
@@ -326,6 +358,18 @@
   "GBBPW0100153": {
     "id": 29377701,
     "title": "QKThr"
+  },
+  "GBBPW1400099": {
+    "id": 85900443,
+    "title": "aisatsana [102]"
+  },
+  "GBBPW9400034": {
+    "id": 29370381,
+    "title": "#3"
+  },
+  "GBBTF0200108": {
+    "id": 359434731,
+    "title": "I've Seen It All"
   },
   "GBCAD1000139": {
     "id": 13776600,
@@ -519,6 +563,10 @@
     "id": 3229877751,
     "title": "Man in the Sun"
   },
+  "QM24S2401874": {
+    "id": 3266841321,
+    "title": "The Sink"
+  },
   "QM24S2402011": {
     "id": 3266841351,
     "title": "Maine"
@@ -526,6 +574,10 @@
   "QM6P42448835": {
     "id": 2856997012,
     "title": "Songs For Sadists Without A Place To Sit Down"
+  },
+  "QM8DG1600552": {
+    "id": 1210598912,
+    "title": "Kill Yourself (Part III)"
   },
   "QMKBG1400031": {
     "id": 750619552,
@@ -562,6 +614,10 @@
   "QT65W2544113": {
     "id": 3549763321,
     "title": "Blasted Steps"
+  },
+  "QZ5FN1926659": {
+    "id": 628490152,
+    "title": "SEGA SUNSET"
   },
   "QZHZ32118154": {
     "id": 1438247592,
@@ -606,6 +662,10 @@
   "TCADX1871983": {
     "id": 573319342,
     "title": "The Bong of Eternal Stench"
+  },
+  "TCAEL1956154": {
+    "id": 769472602,
+    "title": "Sounds of Someday"
   },
   "UK6822009910": {
     "id": 1035487332,
@@ -723,6 +783,18 @@
     "id": 1376720172,
     "title": "Redecorate"
   },
+  "USAT22303244": {
+    "id": 2244905807,
+    "title": "Something To Hide"
+  },
+  "USAT22401062": {
+    "id": 2700008132,
+    "title": "Overcompensate"
+  },
+  "USAT22401697": {
+    "id": 2751723141,
+    "title": "Next Semester"
+  },
   "USAT22402064": {
     "id": 2797874752,
     "title": "Backslide"
@@ -730,6 +802,10 @@
   "USAT22402066": {
     "id": 2914723561,
     "title": "Routines in the Night"
+  },
+  "USAT22402067": {
+    "id": 2922706381,
+    "title": "Vignette"
   },
   "USAT22402070": {
     "id": 3000680461,
@@ -755,9 +831,17 @@
     "id": 3124676251,
     "title": "Big Shot"
   },
+  "USBQU2400001": {
+    "id": 3125076931,
+    "title": "X's"
+  },
   "USBQU2400006": {
     "id": 3124676191,
     "title": "Dark Vacay"
+  },
+  "USBS19800010": {
+    "id": 3493466,
+    "title": "Fuck Dying"
   },
   "USCA20703931": {
     "id": 1912817457,
@@ -911,6 +995,10 @@
     "id": 2313101425,
     "title": "All the Rage Back Home"
   },
+  "USMTD1404916": {
+    "id": 84764355,
+    "title": "My Desire"
+  },
   "USMTD1709780": {
     "id": 394886482,
     "title": "Villains of Circumstance"
@@ -934,6 +1022,18 @@
   "USNLR1900375": {
     "id": 734567992,
     "title": "Daily Battles"
+  },
+  "USNO12300385": {
+    "id": 2626750232,
+    "title": "I Forgot To Be Your Lover"
+  },
+  "USQ4E2005980": {
+    "id": 1069237042,
+    "title": "Infinite Love"
+  },
+  "USQX92305796": {
+    "id": 2511069111,
+    "title": "DOOMED"
   },
   "USRC10100762": {
     "id": 958106,
@@ -1175,6 +1275,10 @@
     "id": 2780825541,
     "title": "Seen"
   },
+  "USUG12401967": {
+    "id": 2728070371,
+    "title": "Good Luck, Babe!"
+  },
   "USUM70602004": {
     "id": 3051667,
     "title": "Incinerate"
@@ -1182,6 +1286,10 @@
   "USUM70730465": {
     "id": 1100389,
     "title": "Billie Jean"
+  },
+  "USUM70923946": {
+    "id": 5398271,
+    "title": "Ain't No Grave (Album Version)"
   },
   "USUM71514609": {
     "id": 112657004,
@@ -1194,6 +1302,10 @@
   "USVT10200096": {
     "id": 1092292662,
     "title": "I Fought Piranhas"
+  },
+  "USVT10300009": {
+    "id": 1092293412,
+    "title": "The Hardest Button to Button"
   },
   "USVT10600052": {
     "id": 1238177942,
