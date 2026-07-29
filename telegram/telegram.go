@@ -56,7 +56,7 @@ func SendSyncSummary(botToken, chatID string, duration time.Duration, audits []A
 			totalErrors++
 		}
 
-		isUnchanged := a.Err == nil && a.TracksAdded == 0 && a.TracksDeleted == 0 && a.TracksMissed == 0
+		isUnchanged := a.Err == nil && a.TracksAdded == 0 && a.TracksDeleted == 0
 		if isUnchanged {
 			unchangedNames = append(unchangedNames, escapeMarkdown(a.Name))
 			continue
